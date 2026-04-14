@@ -1,0 +1,8 @@
+{
+  "name": "omnibaseC 1.2",
+  "description": "A robust, modular React foundation designed for unlimited feature expansion. Includes a dynamic routing system, responsive layout, and integrated Gemini AI capabilities.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ]
+}
