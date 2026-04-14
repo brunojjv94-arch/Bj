@@ -1,0 +1,76 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Hospital staff user account",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string" },
+        "role": { "type": "string" },
+        "password": { "type": "string" }
+      },
+      "required": ["username", "role"]
+    },
+    "Patient": {
+      "title": "Patient",
+      "description": "Patient clinical and administrative record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "dni": { "type": "string" },
+        "bedNumber": { "type": "string" },
+        "lastSync": { "type": "object" }
+      },
+      "required": ["name", "dni", "bedNumber"]
+    },
+    "Bed": {
+      "title": "Bed",
+      "description": "Hospital bed status",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "number": { "type": "string" },
+        "floor": { "type": "string" },
+        "status": { "type": "string" },
+        "patientId": { "type": "string" },
+        "lastSync": { "type": "object" }
+      },
+      "required": ["number", "floor", "status"]
+    },
+    "AppNotification": {
+      "title": "Notification",
+      "description": "System notification for specific roles",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "toRole": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "serverTime": { "type": "object" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["toRole", "title", "message", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users/{username}": {
+      "schema": "User",
+      "description": "Collection of hospital staff users"
+    },
+    "patients/{patientId}": {
+      "schema": "Patient",
+      "description": "Collection of patient records"
+    },
+    "beds/{bedId}": {
+      "schema": "Bed",
+      "description": "Collection of hospital beds"
+    },
+    "notifications/{notificationId}": {
+      "schema": "AppNotification",
+      "description": "Collection of system notifications"
+    }
+  }
+}

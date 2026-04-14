@@ -1,0 +1,122 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: username (lowercase)
+    // Fields:
+    //   - username: string (required)
+    //   - role: string (required)
+    //   - password: string (optional)
+    //
+    // Collection: patients
+    // Document ID: uuid
+    // Fields:
+    //   - name: string (required)
+    //   - dni: string (required)
+    //   - bedNumber: string (required)
+    //   - lastSync: timestamp (serverTimestamp)
+    //   ... other clinical fields
+    //
+    // Collection: beds
+    // Document ID: uuid
+    // Fields:
+    //   - number: string (required)
+    //   - floor: string (required)
+    //   - status: string (required)
+    //   - lastSync: timestamp (serverTimestamp)
+    //
+    // Collection: notifications
+    // Document ID: uuid
+    // Fields:
+    //   - toRole: string (required)
+    //   - title: string (required)
+    //   - message: string (required)
+    //   - serverTime: timestamp (serverTimestamp)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMINISTRADOR' ||
+        (request.auth.token.email == "brunojjv94@gmail.com" && request.auth.token.email_verified == true)
+      );
+    }
+
+    function hasRole(role) {
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['username', 'role']) &&
+             data.username is string && data.username.size() > 0 &&
+             data.role is string;
+    }
+
+    function isValidPatient(data) {
+      return data.keys().hasAll(['name', 'dni', 'bedNumber']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.dni is string && data.dni.size() > 0 &&
+             data.bedNumber is string;
+    }
+
+    function isValidBed(data) {
+      return data.keys().hasAll(['number', 'floor', 'status']) &&
+             data.number is string &&
+             data.floor is string &&
+             data.status in ['available', 'occupied', 'maintenance'];
+    }
+
+    function isValidNotification(data) {
+      return data.keys().hasAll(['toRole', 'title', 'message']) &&
+             data.toRole is string &&
+             data.title is string &&
+             data.message is string;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{username} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAdmin() && isValidUser(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /patients/{patientId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidPatient(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /beds/{bedId} {
+      allow read: if isAuthenticated();
+      allow update: if isAuthenticated() && isValidBed(request.resource.data);
+      allow create, delete: if isAdmin();
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidNotification(request.resource.data);
+      allow update, delete: if isAdmin();
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

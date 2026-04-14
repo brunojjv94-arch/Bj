@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { WorkLayout } from '../components/WorkLayout';
 import { ModuleId, HospitalRole, User, StaffSelection, Doctor, AppNotification } from '../types';
-import { LayoutGrid, Bell, Stethoscope, Activity, Wifi, WifiOff, CloudSync, CheckCircle2 } from 'lucide-react';
+import { LayoutGrid, Bell, Stethoscope, Activity, Wifi, WifiOff, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { Settings } from './modules/Settings';
 import { PatientFile } from './modules/PatientFile';
 import { APP_MODULES } from '../moduleRegistry';

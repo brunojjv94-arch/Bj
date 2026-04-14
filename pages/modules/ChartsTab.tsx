@@ -272,7 +272,7 @@ export const ChartsTab: React.FC<ChartsTabProps> = ({ patient, onUpdate, userRol
   }, [patient.shiftRecords]);
 
   // Group Records by Date for the Table Header
-  const groupedRecordsByDate = useMemo(() => {
+  const groupedRecordsByDate = useMemo<Record<string, ShiftRecord[]>>(() => {
       const groups: Record<string, ShiftRecord[]> = {};
       records.forEach(r => {
           if (!groups[r.date]) groups[r.date] = [];
@@ -627,7 +627,7 @@ export const ChartsTab: React.FC<ChartsTabProps> = ({ patient, onUpdate, userRol
                             {/* DATE HEADER ROW */}
                             <tr className="bg-slate-100 text-slate-500 border-b border-slate-200">
                                 <th className="sticky left-0 bg-slate-100 z-20 border-r border-slate-200 p-2 w-32 min-w-[120px]">FECHA / HORA</th>
-                                {Object.entries(groupedRecordsByDate).map(([date, recs]) => (
+                                {(Object.entries(groupedRecordsByDate) as [string, ShiftRecord[]][]).map(([date, recs]) => (
                                     <th key={date} colSpan={recs.length} className="border-r border-slate-200 p-1 text-center font-bold bg-slate-100 uppercase text-[9px]">
                                         {date}
                                     </th>
@@ -636,7 +636,7 @@ export const ChartsTab: React.FC<ChartsTabProps> = ({ patient, onUpdate, userRol
                             {/* TIME HEADER ROW */}
                             <tr className="bg-white text-slate-700 border-b border-slate-200">
                                 <th className="sticky left-0 bg-white z-20 border-r border-slate-200 p-1 text-right text-[9px] text-slate-400 font-medium italic pr-2">Turno / Hora</th>
-                                {Object.entries(groupedRecordsByDate).flatMap(([date, recs]) => 
+                                {(Object.entries(groupedRecordsByDate) as [string, ShiftRecord[]][]).flatMap(([date, recs]) => 
                                     recs.map(r => (
                                         <th key={r.id} className="border-r border-slate-100 p-1 text-center min-w-[50px] relative group">
                                             <div className="flex flex-col items-center">

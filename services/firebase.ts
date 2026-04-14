@@ -1,25 +1,12 @@
 
-import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { 
   initializeFirestore,
   persistentLocalCache,
   persistentMultipleTabManager,
-  Firestore,
-  enableIndexedDbPersistence
 } from "firebase/firestore";
-
-/**
- * OmniBase Cloud Engine
- * Configurado para sincronización multi-dispositivo y resiliencia offline.
- */
-const firebaseConfig = {
-  apiKey: process.env.API_KEY || "AIzaSy-OmniBase-Placeholder",
-  authDomain: "omnibase-hospital.firebaseapp.com",
-  projectId: "omnibase-hospital",
-  storageBucket: "omnibase-hospital.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef"
-};
+import { getAuth } from "firebase/auth";
+import firebaseConfig from "../firebase-applet-config.json";
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
@@ -28,6 +15,8 @@ const db = initializeFirestore(app, {
   localCache: persistentLocalCache({
     tabManager: persistentMultipleTabManager()
   })
-});
+}, firebaseConfig.firestoreDatabaseId);
 
-export { db };
+const auth = getAuth(app);
+
+export { db, auth };
